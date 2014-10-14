@@ -22,20 +22,28 @@ public class App {
 		/* Enter Server mode */
 		if (option == 1) {
 			
+			System.out.print("Enter port:");
+			int port = scan.nextInt();
+			System.out.println();
+			
 			bcon.setReader(new BoltConnectorReader() {
 
 				@Override
 				public void read(ChannelHandlerContext conCtx, BoltConnectorMessage msg) {
 					
 					String m = msg.getString();
+					String[] tuples = m.split("<>");
 					
-					System.out.println("Server got message: " + m);
+					for (int i = 0; i < tuples.length; i++) {
+						System.out.println(tuples[i]);
+					}
 					
+
+					/* THIS SENDS A MESSAGE BACK TO THE CONTEXT
 					final ByteBuf buff = conCtx.alloc().buffer(m.length());
-					buff.writeBytes(m.getBytes());
-					  
+					buff.writeBytes(m.getBytes());			  
 					conCtx.writeAndFlush(buff);
-				
+					*/
 				}
 
 				@Override
@@ -46,19 +54,26 @@ public class App {
 			});
 			
 			try {
-				bcon.listen(8000);
+				bcon.listen(port);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		else/* Enter Client mode */
 		{
+			
+			System.out.print("Enter port:");
+			int port = scan.nextInt();
+			System.out.print("Enter host:");
+			String host = scan.next();
+			System.out.println();
+			
 			bcon.setReader(new BoltConnectorReader() {
 
 				@Override
 				public void read(ChannelHandlerContext conCtx, BoltConnectorMessage msg) {
 
-					System.out.println("Client Received echo: " + msg.getString());	
+					System.out.println("Received Message: " + msg.getString());	
 				}
 				
 				@Override
@@ -67,7 +82,7 @@ public class App {
 				}
 			});
 				
-			bcon.connect("localhost", 8000);
+			bcon.connect(host, port);
 			
 			while(true)
 			{	
