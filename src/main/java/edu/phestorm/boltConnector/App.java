@@ -67,7 +67,7 @@ public class App {
 				}
 			});
 				
-			bcon.connect("localhost", 5000);
+			bcon.connect("localhost", 8000);
 			
 			while(true)
 			{	
