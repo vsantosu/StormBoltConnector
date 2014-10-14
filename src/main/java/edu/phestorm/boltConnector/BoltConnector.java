@@ -79,54 +79,51 @@ public class BoltConnector {
 		}
 	}
 
-
 	public void connect(String inHost, int inPort) {
 		this.port = inPort;
 		this.host = inHost;
 
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-
-			Bootstrap b = new Bootstrap();
-			b.group(workerGroup);
-			b.channel(NioSocketChannel.class);
-			b.option(ChannelOption.SO_KEEPALIVE, true);
-			b.handler(new ChannelInitializer<SocketChannel>() {
-				@Override
-				public void initChannel(SocketChannel ch) throws Exception {
-					ch.pipeline().addLast(reader);
-				}
-			});
-
-			/* Start the client. */
-			ChannelFuture f;
-
-			try {
-
-				/* Connect to specific host */
-				f = b.connect(host, port);
-				
-				if (!f.awaitUninterruptibly().isSuccess()) {
-		            return;
-		        }
-				isConnected = f.isSuccess();
-				/* Get Channel into writer */
-				BoltConnector.this.writer = f.channel();
-				/* Wait until the connection is closed. */
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		Bootstrap b = new Bootstrap();
+		b.group(workerGroup);
+		b.channel(NioSocketChannel.class);
+		b.option(ChannelOption.SO_KEEPALIVE, true);
+		b.handler(new ChannelInitializer<SocketChannel>() {
+			@Override
+			public void initChannel(SocketChannel ch) throws Exception {
+				ch.pipeline().addLast(reader);
 			}
+		});
 
+		/* Start the client. */
+		ChannelFuture f;
+
+		try {
+
+			/* Connect to specific host */
+			f = b.connect(host, port);
+
+			if (!f.awaitUninterruptibly().isSuccess()) {
+				return;
+			}
+			isConnected = f.isSuccess();
+			/* Get Channel into writer */
+			BoltConnector.this.writer = f.channel();
+			/* Wait until the connection is closed. */
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
 	public void write(String msg) {
-		
-	  final ByteBuf buff = this.writer.alloc().buffer(msg.length());
-	  buff.writeBytes(msg.getBytes());
-	  this.writer.writeAndFlush(buff);
-	  
+
+		final ByteBuf buff = this.writer.alloc().buffer(msg.length());
+		buff.writeBytes(msg.getBytes());
+		this.writer.writeAndFlush(buff);
+
 	}
 
 	public boolean isConnected() {

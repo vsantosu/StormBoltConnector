@@ -46,7 +46,7 @@ public class App {
 			});
 			
 			try {
-				bcon.listen(8080);
+				bcon.listen(8000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -67,7 +67,7 @@ public class App {
 				}
 			});
 				
-			bcon.connect("localhost", 8080);
+			bcon.connect("localhost", 5000);
 			
 			while(true)
 			{	
